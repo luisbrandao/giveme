@@ -63,6 +63,8 @@ docker run --rm                 \
   giveme
 ```
 
+`docker run --rm -it -p 5000:5000 -v $(pwd)/data:/app/data -e PORT=5000 --name giveme-app giveme`
+
 ### Running locally (without Docker)
 
 ```bash

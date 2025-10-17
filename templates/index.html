@@ -338,6 +338,11 @@
             
             const xhr = new XMLHttpRequest();
             
+            // Variables for speed calculation
+            let startTime = Date.now();
+            let lastTime = startTime;
+            let lastLoaded = 0;
+            
             // Track upload progress
             xhr.upload.addEventListener('progress', function(e) {
                 if (e.lengthComputable) {
@@ -345,10 +350,46 @@
                     progressFill.style.width = percentComplete + '%';
                     progressFill.textContent = percentComplete + '%';
                     
-                    // Format file size
-                    const uploadedMB = (e.loaded / (1024 * 1024)).toFixed(2);
-                    const totalMB = (e.total / (1024 * 1024)).toFixed(2);
-                    progressText.textContent = `Uploading: ${uploadedMB} MB / ${totalMB} MB`;
+                    // Calculate upload speed
+                    const currentTime = Date.now();
+                    const timeDiff = (currentTime - lastTime) / 1000; // seconds
+                    const loadedDiff = e.loaded - lastLoaded;
+                    
+                    if (timeDiff > 0) {
+                        const speedBps = loadedDiff / timeDiff; // bytes per second
+                        const speedMBps = speedBps / (1024 * 1024); // MB per second
+                        
+                        // Calculate estimated time remaining
+                        const remaining = e.total - e.loaded;
+                        const eta = remaining / speedBps; // seconds
+                        
+                        // Format file size
+                        const uploadedMB = (e.loaded / (1024 * 1024)).toFixed(2);
+                        const totalMB = (e.total / (1024 * 1024)).toFixed(2);
+                        
+                        // Format speed
+                        let speedText;
+                        if (speedMBps < 1) {
+                            speedText = `${(speedMBps * 1024).toFixed(2)} KB/s`;
+                        } else {
+                            speedText = `${speedMBps.toFixed(2)} MB/s`;
+                        }
+                        
+                        // Format ETA
+                        let etaText;
+                        if (eta < 60) {
+                            etaText = `${Math.round(eta)}s`;
+                        } else if (eta < 3600) {
+                            etaText = `${Math.floor(eta / 60)}m ${Math.round(eta % 60)}s`;
+                        } else {
+                            etaText = `${Math.floor(eta / 3600)}h ${Math.floor((eta % 3600) / 60)}m`;
+                        }
+                        
+                        progressText.textContent = `${uploadedMB} MB / ${totalMB} MB • ${speedText} • ${etaText} remaining`;
+                        
+                        lastTime = currentTime;
+                        lastLoaded = e.loaded;
+                    }
                 }
             });
             
@@ -357,7 +398,10 @@
                 if (xhr.status === 200 || xhr.status === 302) {
                     progressFill.style.width = '100%';
                     progressFill.textContent = '100%';
-                    progressText.textContent = 'Upload complete! Redirecting...';
+                    
+                    const totalTime = (Date.now() - startTime) / 1000;
+                    const avgSpeed = (file.size / totalTime) / (1024 * 1024);
+                    progressText.textContent = `Upload complete! Average speed: ${avgSpeed.toFixed(2)} MB/s • Redirecting...`;
                     
                     // Redirect after a short delay
                     setTimeout(function() {
