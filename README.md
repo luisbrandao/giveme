@@ -2,6 +2,13 @@
 
 A lightweight, containerized Python web application for uploading, downloading, and managing files. Features password protection and support for large files (up to 5GB).
 
+## TL;DR
+
+Just go then: 
+
+`docker run --rm -it -p 5000:5000 -e PORT=5000 --name giveme-app giveme`
+
+
 ## Features
 
 - 🔐 Password-protected access
@@ -62,8 +69,6 @@ docker run --rm                 \
   --name giveme-app             \
   giveme
 ```
-
-`docker run --rm -it -p 5000:5000 -v $(pwd)/data:/app/data -e PORT=5000 --name giveme-app giveme`
 
 ### Running locally (without Docker)
 
