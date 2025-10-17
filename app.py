@@ -1,5 +1,7 @@
 import os
 import hashlib
+import secrets
+import string
 from flask import Flask, render_template, request, send_from_directory, redirect, url_for, session, flash
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -12,8 +14,20 @@ app.config['UPLOAD_FOLDER'] = './data'
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# Get password from environment variable
-APP_PASSWORD = os.environ.get('APP_PASSWORD', 'changeme')
+# Get password from environment variable or generate a random one
+APP_PASSWORD = os.environ.get('APP_PASSWORD')
+if not APP_PASSWORD:
+    # Generate a random 16-character password
+    alphabet = string.ascii_letters + string.digits
+    APP_PASSWORD = ''.join(secrets.choice(alphabet) for _ in range(16))
+    print("=" * 80)
+    print("WARNING: APP_PASSWORD not set!")
+    print("Generated random password for this session:")
+    print("")
+    print(f"    PASSWORD: {APP_PASSWORD}")
+    print("")
+    print("Set APP_PASSWORD environment variable to use a custom password.")
+    print("=" * 80)
 
 # Create a password hash to validate sessions
 # This will change if the password changes, invalidating old sessions
