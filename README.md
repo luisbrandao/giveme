@@ -35,7 +35,6 @@ A lightweight, containerized Python web application for uploading, downloading, 
    Set your own values:
    ```
    APP_PASSWORD=your-secure-password-here
-   SECRET_KEY=your-secret-key-for-sessions
    PORT=5000
    ```
 
@@ -54,14 +53,14 @@ A lightweight, containerized Python web application for uploading, downloading, 
 # Build the image
 docker build -t giveme .
 
-# Run the container
-docker run -d \
-  -p 5000:5000 \
-  -v $(pwd)/data:/app/data \
-  -e APP_PASSWORD=your-password \
-  -e PORT=5000 \
-  --name giveme-app \
-  ghcr.io/luisbrandao/giveme:latest
+# Run on port 8080 instead
+docker run -d 
+  -p 8080:8080 
+  -v $(pwd)/data:/app/data 
+  -e APP_PASSWORD=your-password 
+  -e PORT=8080 
+  --name giveme-app 
+  giveme
 ```
 
 ### Running locally (without Docker)
@@ -76,7 +75,6 @@ pip install -r requirements.txt
 
 # Set environment variables
 export APP_PASSWORD=your-password
-export SECRET_KEY=your-secret-key
 export PORT=5000
 
 # Run the application
@@ -87,8 +85,7 @@ python app.py
 
 ### Environment Variables
 
-- `APP_PASSWORD` - Password required to access the application (default: `changeme`)
-- `SECRET_KEY` - Secret key for session management (default: auto-generated)
+- `APP_PASSWORD` - Password required to access the application (if not set, a random password will be generated and displayed in logs)
 - `PORT` - Port number for the application (default: `5000`)
 - `MAX_CONTENT_LENGTH` - Maximum file size (default: 5GB, configurable in `app.py`)
 
@@ -133,9 +130,9 @@ giveme/
 
 ## Security Notes
 
-- Always use a strong password for `APP_PASSWORD`
-- Change the `SECRET_KEY` to a random string in production
-- The application uses session-based authentication
+- Always use a strong password for `APP_PASSWORD` in production
+- If `APP_PASSWORD` is not set, a random password is generated on startup (check logs)
+- Sessions are invalidated on container restart for security
 - Files are served with secure filenames using `werkzeug.utils.secure_filename`
 - Consider adding HTTPS in production (use a reverse proxy like nginx)
 
