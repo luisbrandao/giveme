@@ -111,7 +111,7 @@ All uploaded files are stored in the `./data` directory. This directory is:
 ## Technical Details
 
 - **Framework**: Flask 3.0
-- **Python Version**: 3.11
+- **Python Version**: 3.13
 - **Port**: 5000
 - **Max File Size**: 5GB (configurable)
 - **Chunk Size**: 8KB for streaming uploads/downloads
