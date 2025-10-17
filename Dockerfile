@@ -13,6 +13,9 @@ COPY templates ./templates
 # Create data directory
 RUN mkdir -p /app/data
 
+# Declare volume for persistent data
+VOLUME ["/app/data"]
+
 # Expose port
 EXPOSE 5000
 
