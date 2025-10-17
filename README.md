@@ -62,21 +62,7 @@ docker run -d \
   -e SECRET_KEY=your-secret-key \
   -e PORT=5000 \
   --name giveme-app \
-  giveme
-```
-
-**Using a custom port:**
-
-```bash
-# Run on port 8080 instead
-docker run -d \
-  -p 8080:8080 \
-  -v $(pwd)/data:/app/data \
-  -e APP_PASSWORD=your-password \
-  -e SECRET_KEY=your-secret-key \
-  -e PORT=8080 \
-  --name giveme-app \
-  giveme
+  ghcr.io/luisbrandao/giveme:latest
 ```
 
 ### Running locally (without Docker)
