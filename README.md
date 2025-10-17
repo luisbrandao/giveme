@@ -53,13 +53,13 @@ A lightweight, containerized Python web application for uploading, downloading, 
 # Build the image
 docker build -t giveme .
 
-# Run on port 8080 instead
-docker run -d --rm
-  -p 5000:5000 
-  -v $(pwd)/data:/app/data 
-  -e APP_PASSWORD=your-password 
-  -e PORT=5000 
-  --name giveme-app 
+# Run on port 5000 instead
+docker run --rm                 \
+  -p 5000:5000                  \
+  -v $(pwd)/data:/app/data      \
+  -e APP_PASSWORD=your-password \
+  -e PORT=5000                  \
+  --name giveme-app             \
   giveme
 ```
 
@@ -107,10 +107,13 @@ All uploaded files are stored in the `./data` directory. This directory is:
 ## Technical Details
 
 - **Framework**: Flask 3.0
+- **WSGI Server**: Gunicorn (production-ready)
 - **Python Version**: 3.13
-- **Port**: 5000
+- **Workers**: 4 (configurable)
+- **Port**: 5000 (configurable via PORT env var)
 - **Max File Size**: 5GB (configurable)
 - **Chunk Size**: 8KB for streaming uploads/downloads
+- **Request Timeout**: 300 seconds (5 minutes)
 
 ## Project Structure
 

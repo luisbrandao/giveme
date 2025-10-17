@@ -20,8 +20,8 @@ VOLUME ["/app/data"]
 EXPOSE 5000
 
 # Set environment variables
-ENV FLASK_APP=app.py
 ENV PYTHONUNBUFFERED=1
+ENV PORT=5000
 
-# Run the application
-CMD ["python", "app.py"]
+# Run the application with Gunicorn
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT --workers 1 --timeout 300 --access-logfile - --error-logfile - app:app"]
