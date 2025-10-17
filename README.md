@@ -54,11 +54,11 @@ A lightweight, containerized Python web application for uploading, downloading, 
 docker build -t giveme .
 
 # Run on port 8080 instead
-docker run -d 
-  -p 8080:8080 
+docker run -d --rm
+  -p 5000:5000 
   -v $(pwd)/data:/app/data 
   -e APP_PASSWORD=your-password 
-  -e PORT=8080 
+  -e PORT=5000 
   --name giveme-app 
   giveme
 ```
