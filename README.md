@@ -59,7 +59,6 @@ docker run -d \
   -p 5000:5000 \
   -v $(pwd)/data:/app/data \
   -e APP_PASSWORD=your-password \
-  -e SECRET_KEY=your-secret-key \
   -e PORT=5000 \
   --name giveme-app \
   ghcr.io/luisbrandao/giveme:latest

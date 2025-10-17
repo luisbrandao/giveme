@@ -1,4 +1,5 @@
 import os
+import hashlib
 from flask import Flask, render_template, request, send_from_directory, redirect, url_for, session, flash
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -14,11 +15,20 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 # Get password from environment variable
 APP_PASSWORD = os.environ.get('APP_PASSWORD', 'changeme')
 
+# Create a password hash to validate sessions
+# This will change if the password changes, invalidating old sessions
+PASSWORD_HASH = hashlib.sha256(APP_PASSWORD.encode()).hexdigest()[:16]
+
 
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get('logged_in'):
+            return redirect(url_for('login'))
+        # Validate that the session matches the current password
+        if session.get('password_hash') != PASSWORD_HASH:
+            session.clear()
+            flash('Your session has expired. Please login again.', 'error')
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -30,6 +40,7 @@ def login():
         password = request.form.get('password')
         if password == APP_PASSWORD:
             session['logged_in'] = True
+            session['password_hash'] = PASSWORD_HASH
             return redirect(url_for('index'))
         else:
             flash('Invalid password', 'error')
