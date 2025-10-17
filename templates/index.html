@@ -97,6 +97,50 @@
             transform: translateY(-2px);
         }
         
+        .upload-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-container {
+            display: none;
+            margin-top: 15px;
+        }
+        
+        .progress-container.active {
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .progress-text {
+            margin-top: 8px;
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+        }
+        
         .files-section {
             background: white;
             padding: 30px;
@@ -228,10 +272,16 @@
         
         <div class="upload-section">
             <h2>📤 Upload File</h2>
-            <form method="POST" action="{{ url_for('upload_file') }}" enctype="multipart/form-data" class="upload-form">
-                <input type="file" name="file" required>
-                <button type="submit" class="upload-btn">Upload</button>
+            <form method="POST" action="{{ url_for('upload_file') }}" enctype="multipart/form-data" class="upload-form" id="uploadForm">
+                <input type="file" name="file" id="fileInput" required>
+                <button type="submit" class="upload-btn" id="uploadBtn">Upload</button>
             </form>
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill">0%</div>
+                </div>
+                <div class="progress-text" id="progressText">Uploading...</div>
+            </div>
         </div>
         
         <div class="files-section">
@@ -262,5 +312,75 @@
             {% endif %}
         </div>
     </div>
+    
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            if (!fileInput.files || !fileInput.files[0]) {
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const formData = new FormData(form);
+            
+            // Show progress bar and disable upload button
+            progressContainer.classList.add('active');
+            uploadBtn.disabled = true;
+            fileInput.disabled = true;
+            
+            const xhr = new XMLHttpRequest();
+            
+            // Track upload progress
+            xhr.upload.addEventListener('progress', function(e) {
+                if (e.lengthComputable) {
+                    const percentComplete = Math.round((e.loaded / e.total) * 100);
+                    progressFill.style.width = percentComplete + '%';
+                    progressFill.textContent = percentComplete + '%';
+                    
+                    // Format file size
+                    const uploadedMB = (e.loaded / (1024 * 1024)).toFixed(2);
+                    const totalMB = (e.total / (1024 * 1024)).toFixed(2);
+                    progressText.textContent = `Uploading: ${uploadedMB} MB / ${totalMB} MB`;
+                }
+            });
+            
+            // Handle completion
+            xhr.addEventListener('load', function() {
+                if (xhr.status === 200 || xhr.status === 302) {
+                    progressFill.style.width = '100%';
+                    progressFill.textContent = '100%';
+                    progressText.textContent = 'Upload complete! Redirecting...';
+                    
+                    // Redirect after a short delay
+                    setTimeout(function() {
+                        window.location.href = '{{ url_for("index") }}';
+                    }, 500);
+                } else {
+                    progressText.textContent = 'Upload failed. Please try again.';
+                    uploadBtn.disabled = false;
+                    fileInput.disabled = false;
+                }
+            });
+            
+            // Handle errors
+            xhr.addEventListener('error', function() {
+                progressText.textContent = 'Upload failed. Please try again.';
+                uploadBtn.disabled = false;
+                fileInput.disabled = false;
+            });
+            
+            // Send the request
+            xhr.open('POST', form.action);
+            xhr.send(formData);
+        });
+    </script>
 </body>
 </html>
