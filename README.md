@@ -96,7 +96,7 @@ python app.py
 
 - `APP_PASSWORD` - Password required to access the application (if not set, a random password will be generated and displayed in logs)
 - `PORT` - Port number for the application (default: `5000`)
-- `MAX_CONTENT_LENGTH` - Maximum file size (default: 20GB, configurable in `app.py`)
+- `MAX_CONTENT_LENGTH` - Maximum file size (default: 21474836480, (`20*1024*1024*1024` ~20GB)   configurable in `app.py`)
 
 ## File Storage
 
