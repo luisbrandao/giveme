@@ -1,12 +1,14 @@
 # GiveMe - Simple File Upload/Download Hub
 
-A lightweight, containerized Python web application for uploading, downloading, and managing files. Features password protection and support for large files (up to 5GB).
+A lightweight, containerized Python web application for uploading, downloading, and managing files. Features password protection and support for large files (up to 20GB).
 
 ## TL;DR
 
 Just go then: 
 
-`docker run --rm -it -p 5000:5000 -e PORT=5000 --name giveme-app giveme`
+```bash
+docker run --rm -it -p 5000:5000 -e APP_PASSWORD=your-password -e PORT=5000 --name giveme-app giveme
+```
 
 
 ## Features
@@ -17,7 +19,7 @@ Just go then:
 - 📋 File listing with sizes
 - 🗑️ File deletion
 - 🐳 Fully containerized with Docker
-- 💾 Support for large files (tested up to 5GB)
+- 💾 Support for large files (tested up to 20GB)
 - 🎨 Clean, modern UI
 
 ## Quick Start
@@ -94,7 +96,7 @@ python app.py
 
 - `APP_PASSWORD` - Password required to access the application (if not set, a random password will be generated and displayed in logs)
 - `PORT` - Port number for the application (default: `5000`)
-- `MAX_CONTENT_LENGTH` - Maximum file size (default: 5GB, configurable in `app.py`)
+- `MAX_CONTENT_LENGTH` - Maximum file size (default: 20GB, configurable in `app.py`)
 
 ## File Storage
 
@@ -118,7 +120,7 @@ All uploaded files are stored in the `./data` directory. This directory is:
 - **Python Version**: 3.13
 - **Workers**: 4 (configurable)
 - **Port**: 5000 (configurable via PORT env var)
-- **Max File Size**: 5GB (configurable)
+- **Max File Size**: 20GB (configurable)
 - **Chunk Size**: 8KB for streaming uploads/downloads
 - **Request Timeout**: 300 seconds (5 minutes)
 
